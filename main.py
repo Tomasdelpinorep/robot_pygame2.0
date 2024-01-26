@@ -11,13 +11,26 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
 
+        self.character_sprite_sheet = spriteSheet("assets/character.png")
+        self.terrain_sprite_sheet = spriteSheet("assets/terrain.png")
+
+    def createTilemap(self):
+        # Aquí la i actúa como la coordenada "y" y j actúa como la coordenada "X"
+        for i, row in enumerate(tilemap):
+            for j, column in enumerate(row):
+                if column == "S":
+                    Spike(self, j, i)
+                if column == "P":
+                    Player(self, j, i)
+                Ground(self, j, i)
+
     def new(self):
         self.playing = True
 
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.spikes = pygame.sprite.LayeredUpdates()
 
-        self.player = Player(self, 1, 2)
+        self.createTilemap()
 
     def events(self):
         for event in pygame.event.get():
@@ -43,12 +56,15 @@ class Game:
 
     def game_over(self):
         pass
+
     def intro_screen(self):
         pass
+
 
 g = Game()
 g.intro_screen()
 g.new()
+
 while g.running:
     g.main()
     g.game_over()
