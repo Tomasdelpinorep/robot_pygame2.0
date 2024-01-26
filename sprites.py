@@ -68,6 +68,23 @@ class Player(pygame.sprite.Sprite):
             self.y_change += PLAYER_SPEED
             self.facing = 'down'
 
+    def move_camera_right(self):
+        # Mando todos los sprites a la izquierda, esto da la ilusión de que hay una cámara siguiendo al personaje
+        for sprite in self.game.all_sprites:
+            sprite.rect.x -= PLAYER_SPEED
+
+    def move_camera_left(self):
+        for sprite in self.game.all_sprites:
+            sprite.rect.x += PLAYER_SPEED
+
+    def move_camera_up(self):
+        for sprite in self.game.all_sprites:
+            sprite.rect.y += PLAYER_SPEED
+
+    def move_camera_down(self):
+        for sprite in self.game.all_sprites:
+            sprite.rect.y -= PLAYER_SPEED
+
     def collide_blocks(self, direction):
         if direction == "x":
             # Ese último parámetro "dokill" es por si quieres borrar el sprite al colisionar
@@ -85,6 +102,13 @@ class Player(pygame.sprite.Sprite):
                 if self.x_change < 0:
                     self.rect.x = hits[0].rect.right
 
+            # Si no choca y se mueve a la derecha o izquierda, muevo la "cámara"
+            else:
+                if self.x_change > 0:
+                    self.move_camera_right()
+                if self.x_change < 0:
+                    self.move_camera_left()
+
         if direction == "y":
             hits = pygame.sprite.spritecollide(self, self.game.spikes, False)
             if hits:
@@ -95,6 +119,13 @@ class Player(pygame.sprite.Sprite):
                 # Si estoy yendo hacia arriba
                 if self.y_change < 0:
                     self.rect.y = hits[0].rect.bottom
+
+            # Si no choca y se mueve hacia arriba o abajo, muevo la "cámara"
+            else:
+                if self.y_change > 0:
+                    self.move_camera_down()
+                if self.y_change < 0:
+                    self.move_camera_up()
 
     def animate(self):
         down_animations = [self.game.character_spritesheet.get_sprite(3, 2, self.width, self.height),
@@ -194,3 +225,37 @@ class Ground(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
+
+
+class Button:
+    def __init__(self, x, y, width, height, fg, bg, content, fontsize):
+        self.font = pygame.font.Font("assets/PressStart2P-Regular.ttf", fontsize)
+        self.content = content
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.bg = bg
+        self.fg = fg
+
+        self.image = pygame.Surface((self.width, self.height))
+        self.image.fill(self.bg)
+        self.rect = self.image.get_rect()
+
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+        self.text = self.font.render(self.content, True, self.fg)
+        # Coloca el texto en la mitad del botón
+        self.text_rect = self.text.get_rect(center = (self.width/2, self.height/2))
+        self.image.blit(self.text, self.text_rect)
+
+    def is_pressed(self, pos, pressed):
+        if self.rect.collidepoint(pos):
+            # pressed[0] significa que se ha hecho left click
+            if pressed[0]:
+                return True
+            return False
+        return False
+
+
