@@ -16,14 +16,24 @@ class Game:
         self.terrain_sprite_sheet = spriteSheet("assets/terrain.png")
         self.intro_background = pygame.image.load("assets/introbackground.png")
 
+        self.num_spikes = NUM_SPIKES
+
     def createTilemap(self):
+
         # Aquí la i actúa como la coordenada "y" y j actúa como la coordenada "X"
-        for i, row in enumerate(tilemap):
+        for i, row in enumerate(TILEMAP):
+            max_per_row = 1
             for j, column in enumerate(row):
                 if column == "S":
                     Spike(self, j, i)
                 if column == "P":
                     Player(self, j, i)
+                if column == ".":
+                    chance = random.random()
+                    if chance < 0.05 and self.num_spikes > 0 and max_per_row > 0:
+                        Spike(self, j, i)
+                        self.num_spikes -= 1
+                        max_per_row -= 1
                 Ground(self, j, i)
 
     def new(self):
