@@ -13,9 +13,11 @@ class Game:
         self.font = pygame.font.Font('assets/PressStart2P-Regular.ttf', 32)
 
         self.character_spritesheet = spriteSheet("assets/character.png")
+        self.character_waterproof_spriteshet = spriteSheet("assets/animated_waterproof.png")
         self.terrain_sprite_sheet = spriteSheet("assets/terrain.png")
         self.intro_background = pygame.image.load("assets/introbackground.png")
         self.heart_image = pygame.image.load("assets/heartpng.png")
+        self.goggles_image = pygame.image.load("assets/goggles.png")
 
         self.num_spikes = NUM_SPIKES
         self.num_water = NUM_WATER
@@ -59,11 +61,24 @@ class Game:
                             if self.num_spikes == 0 and self.num_water == 0:
                                 hasnt_spawned = False
 
-                            # if random_spawn =='D' and self.num_diamonds > 0:
-                            # if random_spawn == 'B' and self.num_water > 0
                 Ground(self, j, i)
 
 
+        random_x = random.randint(0, len(TILEMAP[0]) - 1)
+        random_y = random.randint(0, len(TILEMAP) - 1)
+
+        existing_element = self.get_element_at_coordinate(random_x, random_y)
+        if existing_element:
+            existing_element.kill()
+
+        Goggles(self, random_x, random_y)
+
+    def get_element_at_coordinate(self, x, y):
+        for sprite in self.all_sprites:
+            if isinstance(sprite, (Spike, Water, Goggles)):  # Add more classes if needed
+                if sprite.rect.collidepoint(x * TILE_SIZE, y * TILE_SIZE):
+                    return sprite
+        return None
 
     def new(self):
         self.playing = True
@@ -73,6 +88,8 @@ class Game:
         self.water = pygame.sprite.LayeredUpdates()
         self.lifebar_group = pygame.sprite.LayeredUpdates()
         self.deals_damage_group = pygame.sprite.Group()
+        self.goggles = pygame.sprite.LayeredUpdates()
+        self.items_group = pygame.sprite.Group()
 
         self.createTilemap()
         self.createLifeBar()
