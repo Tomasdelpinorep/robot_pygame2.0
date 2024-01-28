@@ -41,6 +41,8 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = self.x
         self.rect.y = self.y
 
+        self.hp = 10
+
     def update(self):
         self.movement()
         self.animate()
@@ -208,6 +210,28 @@ class Spike(pygame.sprite.Sprite):
         self.rect.y = self.y
 
 
+class Water(pygame.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.game = game
+        self._layer = SPIKE_LAYER
+        self.groups = self.game.all_sprites, self.game.water
+
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+        self.x = x * TILE_SIZE
+        self.y = y * TILE_SIZE
+        self.width = TILE_SIZE
+        self.height = TILE_SIZE
+
+        self.image = self.game.terrain_sprite_sheet.get_sprite(928, 160, self.width, self.height)
+
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+        self.damage = 1
+
+
 class Ground(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
         self.game = game
@@ -247,7 +271,7 @@ class Button:
 
         self.text = self.font.render(self.content, True, self.fg)
         # Coloca el texto en la mitad del botón
-        self.text_rect = self.text.get_rect(center = (self.width/2, self.height/2))
+        self.text_rect = self.text.get_rect(center=(self.width / 2, self.height / 2))
         self.image.blit(self.text, self.text_rect)
 
     def is_pressed(self, pos, pressed):
@@ -259,3 +283,44 @@ class Button:
         return False
 
 
+class LifeBar(pygame.sprite.Sprite):
+    def __init__(self, game, x, y, width, height):
+        self.game = game
+        self._layer = LIFEBAR_LAYER
+        self.groups = self.game.lifebar_group
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+        self.image = pygame.Surface((width, height))
+        self.image.fill(pygame.Color(255, 255, 255))
+
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+        self.draw_hearts()
+
+    def draw_hearts(self):
+        for i in range(10):
+            heart = Heart(self.game, i * (LIFEBAR_ITEM_SPRITE_WIDTH + 5), WIN_HEIGHT - ((LIFEBAR_HEIGHT + LIFEBAR_ITEM_SPRITE_HEIGHT)/2))
+            self.game.lifebar_group.add(heart)
+
+
+class Heart(pygame.sprite.Sprite):
+    def __init__(self, game, x, y):
+        super().__init__()
+        self.game = game
+        self._layer = LIFEBAR_LAYER
+        self.groups = self.game.lifebar_group
+
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+        self.x = x
+        self.y = y
+        self.width = 20
+        self.height = 20
+
+        self.image = pygame.transform.scale(self.game.heart_image, (self.width, self.height))
+
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y

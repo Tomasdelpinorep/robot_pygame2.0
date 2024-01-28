@@ -1,6 +1,7 @@
 import pygame
 from sprites import *
 from config import *
+from misc import *
 import sys
 
 
@@ -15,14 +16,22 @@ class Game:
         self.character_spritesheet = spriteSheet("assets/character.png")
         self.terrain_sprite_sheet = spriteSheet("assets/terrain.png")
         self.intro_background = pygame.image.load("assets/introbackground.png")
+        self.heart_image = pygame.image.load("assets/heartpng.png")
 
         self.num_spikes = NUM_SPIKES
+        self.num_water = NUM_WATER
+        self.num_diamonds = NUM_DIAMONDS
+
+    def createLifeBar(self):
+        self.lifeBar = LifeBar(self, 0, WIN_HEIGHT - LIFEBAR_HEIGHT, WIN_WIDTH, LIFEBAR_HEIGHT)
+        self.lifeBar.draw_hearts()
 
     def createTilemap(self):
 
-        # Aquí la i actúa como la coordenada "y" y j actúa como la coordenada "X"
+        possible_spawns = ['W', 'S', 'D', 'B']
+
+        # Aquí la i actúa como la coordenada "Y" y j actúa como la coordenada "X"
         for i, row in enumerate(TILEMAP):
-            max_per_row = 1
             for j, column in enumerate(row):
                 if column == "S":
                     Spike(self, j, i)
@@ -30,19 +39,43 @@ class Game:
                     Player(self, j, i)
                 if column == ".":
                     chance = random.random()
-                    if chance < 0.05 and self.num_spikes > 0 and max_per_row > 0:
-                        Spike(self, j, i)
-                        self.num_spikes -= 1
-                        max_per_row -= 1
+                    # 10% de probabilidad de que spawnee algo en cada bloque
+                    if chance < 0.1:
+                        hasnt_spawned = True
+                        while hasnt_spawned:
+                            random_spawn = random.choice(possible_spawns)
+
+                            if random_spawn == 'W' and self.num_water > 0:
+                                Water(self, j, i)
+                                hasnt_spawned = False
+                                self.num_water -= 1
+
+                            if random_spawn == 'S' and self.num_spikes > 0:
+                                Spike(self, j, i)
+                                hasnt_spawned = False
+                                self.num_spikes -= 1
+
+                            # Por si se da el caso que spawneen todos los bloques posibles antes de que
+                            # cargue el mapa al completo
+                            if self.num_spikes == 0 and self.num_water == 0:
+                                hasnt_spawned = False
+
+                            # if random_spawn =='D' and self.num_diamonds > 0:
+                            # if random_spawn == 'B' and self.num_water > 0
                 Ground(self, j, i)
+
+
 
     def new(self):
         self.playing = True
 
         self.all_sprites = pygame.sprite.LayeredUpdates()
         self.spikes = pygame.sprite.LayeredUpdates()
+        self.water = pygame.sprite.LayeredUpdates()
+        self.lifebar_group = pygame.sprite.LayeredUpdates()
 
         self.createTilemap()
+        self.createLifeBar()
 
     def events(self):
         for event in pygame.event.get():
@@ -56,6 +89,7 @@ class Game:
     def draw(self):
         self.screen.fill(pygame.Color(0, 0, 0))
         self.all_sprites.draw(self.screen)
+        self.lifebar_group.draw(self.screen)
         self.clock.tick(FPS)
         pygame.display.update()
 
@@ -88,7 +122,7 @@ class Game:
             if play_button.is_pressed(mouse_pos, mouse_pressed):
                 intro = False
 
-            self.screen.blit(self.intro_background, (0,0))
+            self.screen.blit(self.intro_background, (0, 0))
             self.screen.blit(title, title_rect)
             self.screen.blit(play_button.image, play_button.rect)
             self.clock.tick(FPS)
@@ -96,7 +130,7 @@ class Game:
 
 
 g = Game()
-g.intro_screen()
+# g.intro_screen()
 g.new()
 
 while g.running:
