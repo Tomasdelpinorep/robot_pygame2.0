@@ -21,6 +21,10 @@ class Player(pygame.sprite.Sprite):
         self.game = game
         self._layer = PLAYER_LAYER
         self.groups = self.game.all_sprites
+        self.hp = 10
+        self.cooldown_ticks = 0
+        self.cooldown_duration = 15
+        self.isWaterproof = False
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         self.x = x * TILE_SIZE
@@ -41,8 +45,6 @@ class Player(pygame.sprite.Sprite):
         self.rect.x = self.x
         self.rect.y = self.y
 
-        self.hp = 10
-
     def update(self):
         self.movement()
         self.animate()
@@ -54,6 +56,9 @@ class Player(pygame.sprite.Sprite):
 
         self.x_change = 0
         self.y_change = 0
+
+        if self.cooldown_ticks > 0:
+            self.cooldown_ticks -= 1
 
     def movement(self):
         keys = pygame.key.get_pressed()
@@ -70,64 +75,70 @@ class Player(pygame.sprite.Sprite):
             self.y_change += PLAYER_SPEED
             self.facing = 'down'
 
-    def move_camera_right(self):
-        # Mando todos los sprites a la izquierda, esto da la ilusión de que hay una cámara siguiendo al personaje
-        for sprite in self.game.all_sprites:
-            sprite.rect.x -= PLAYER_SPEED
-
-    def move_camera_left(self):
-        for sprite in self.game.all_sprites:
-            sprite.rect.x += PLAYER_SPEED
-
-    def move_camera_up(self):
-        for sprite in self.game.all_sprites:
-            sprite.rect.y += PLAYER_SPEED
-
-    def move_camera_down(self):
-        for sprite in self.game.all_sprites:
-            sprite.rect.y -= PLAYER_SPEED
+    # def move_camera_right(self):
+    #     # Mando todos los sprites a la izquierda, esto da la ilusión de que hay una cámara siguiendo al personaje
+    #     for sprite in self.game.all_sprites:
+    #         sprite.rect.x -= PLAYER_SPEED
+    #
+    # def move_camera_left(self):
+    #     for sprite in self.game.all_sprites:
+    #         sprite.rect.x += PLAYER_SPEED
+    #
+    # def move_camera_up(self):
+    #     for sprite in self.game.all_sprites:
+    #         sprite.rect.y += PLAYER_SPEED
+    #
+    # def move_camera_down(self):
+    #     for sprite in self.game.all_sprites:
+    #         sprite.rect.y -= PLAYER_SPEED
 
     def collide_blocks(self, direction):
-        if direction == "x":
-            # Ese último parámetro "dokill" es por si quieres borrar el sprite al colisionar
-            hits = pygame.sprite.spritecollide(self, self.game.spikes, False)
-            if hits:
-                # Compruebo si se está moviendo a la derecha o a la izquierda
-                if self.x_change > 0:
-                    # Coloca el hitbox del personaje (self.rect.x) justo al lado del spike al hacer contacto
-                    # Esto es para que se haga contacto 1 vez nada mas e inmediatamente el juego separe los hitboxes
-                    # Igualarlo a hits[0] lo coloca justo encima del spike y luego al restarle el ancho del jugador
-                    # lo coloca al lado pero sin tocar
-                    self.rect.x = hits[0].rect.left - self.rect.width
+        hits = pygame.sprite.spritecollide(self, self.game.deals_damage_group, False)
 
-                # Si estoy yendo a la izquierda
-                if self.x_change < 0:
-                    self.rect.x = hits[0].rect.right
+        # Actualiza corazones o acaba la partida
+        if hits:
+            self.game.lifeBar.draw_hearts(self.hp)
+            if self.hp <= 0:
+                self.game.game_over()
 
-            # Si no choca y se mueve a la derecha o izquierda, muevo la "cámara"
-            else:
-                if self.x_change > 0:
-                    self.move_camera_right()
-                if self.x_change < 0:
-                    self.move_camera_left()
+            for sprite in hits:
 
-        if direction == "y":
-            hits = pygame.sprite.spritecollide(self, self.game.spikes, False)
-            if hits:
-                # Si estoy yendo hacia abajo
-                if self.y_change > 0:
-                    self.rect.y = hits[0].rect.top - self.rect.height
+                # Esto permite entrar en un bloque de agua pero te repele de un pincho
+                if isinstance(sprite, Spike):
+                    self.take_damage()
 
-                # Si estoy yendo hacia arriba
-                if self.y_change < 0:
-                    self.rect.y = hits[0].rect.bottom
+                    if direction == "x":
+                        # Compruebo si se está moviendo a la derecha o a la izquierda
+                        if self.x_change > 0:
+                            # Coloca el hitbox del personaje (self.rect.x) justo al lado del spike al hacer contacto
+                            # Esto es para que se haga contacto 1 vez nada mas e inmediatamente el juego separe los
+                            # hitboxes Igualarlo a hits[0] lo coloca justo encima del spike y luego al restarle el
+                            # ancho del jugador lo coloca al lado pero sin tocar
+                            self.rect.x = hits[0].rect.left - self.rect.width - 10
 
-            # Si no choca y se mueve hacia arriba o abajo, muevo la "cámara"
-            else:
-                if self.y_change > 0:
-                    self.move_camera_down()
-                if self.y_change < 0:
-                    self.move_camera_up()
+                        # Si estoy yendo a la izquierda
+                        if self.x_change < 0:
+                            self.rect.x = hits[0].rect.right + 10
+
+                    if direction == "y":
+                        # Si estoy yendo hacia abajo
+                        if self.y_change > 0:
+                            self.rect.y = hits[0].rect.top - self.rect.height - 10
+
+                        # Si estoy yendo hacia arriba
+                        if self.y_change < 0:
+                            self.rect.y = hits[0].rect.bottom + 10
+
+                if isinstance(sprite, Water):
+                    if not self.isWaterproof:
+                        self.take_damage()
+
+    # Hace que solo pueda dañarse 4 veces al segundo
+    def take_damage(self):
+        if self.cooldown_ticks == 0:
+            self.hp -= 1
+            self.game.lifeBar.draw_hearts(self.hp)
+            self.cooldown_ticks = self.cooldown_duration
 
     def animate(self):
         down_animations = [self.game.character_spritesheet.get_sprite(3, 2, self.width, self.height),
@@ -193,7 +204,9 @@ class Spike(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
         self.game = game
         self._layer = SPIKE_LAYER
-        self.groups = self.game.all_sprites, self.game.spikes  # Añade a los grupos de los sprites y de los spikes
+
+        # Añade a los grupos de los sprites y de los spikes
+        self.groups = self.game.all_sprites, self.game.spikes, self.game.deals_damage_group
 
         # Llama al inicializador de sprite.Sprite y se añade la clase Spike a los grupos de sprite pasados por parámetro
         pygame.sprite.Sprite.__init__(self, self.groups)
@@ -214,7 +227,7 @@ class Water(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
         self.game = game
         self._layer = SPIKE_LAYER
-        self.groups = self.game.all_sprites, self.game.water
+        self.groups = self.game.all_sprites, self.game.water, self.game.deals_damage_group
 
         pygame.sprite.Sprite.__init__(self, self.groups)
 
@@ -284,7 +297,7 @@ class Button:
 
 
 class LifeBar(pygame.sprite.Sprite):
-    def __init__(self, game, x, y, width, height):
+    def __init__(self, game, x, y, width, height, player):
         self.game = game
         self._layer = LIFEBAR_LAYER
         self.groups = self.game.lifebar_group
@@ -297,11 +310,17 @@ class LifeBar(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
-        self.draw_hearts()
+        self.draw_hearts(player.hp)
 
-    def draw_hearts(self):
-        for i in range(10):
-            heart = Heart(self.game, i * (LIFEBAR_ITEM_SPRITE_WIDTH + 5), WIN_HEIGHT - ((LIFEBAR_HEIGHT + LIFEBAR_ITEM_SPRITE_HEIGHT)/2))
+    def draw_hearts(self, hp):
+        # Remove only the hearts from the lifebar_group
+        for sprite in self.game.lifebar_group.sprites():
+            if isinstance(sprite, Heart):
+                sprite.kill()
+
+        for i in range(hp):
+            heart = Heart(self.game, i * (LIFEBAR_ITEM_SPRITE_WIDTH + 5),
+                          WIN_HEIGHT - ((LIFEBAR_HEIGHT + LIFEBAR_ITEM_SPRITE_HEIGHT) / 2))
             self.game.lifebar_group.add(heart)
 
 

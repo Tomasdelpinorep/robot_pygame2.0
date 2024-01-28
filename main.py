@@ -1,7 +1,6 @@
 import pygame
 from sprites import *
 from config import *
-from misc import *
 import sys
 
 
@@ -23,8 +22,8 @@ class Game:
         self.num_diamonds = NUM_DIAMONDS
 
     def createLifeBar(self):
-        self.lifeBar = LifeBar(self, 0, WIN_HEIGHT - LIFEBAR_HEIGHT, WIN_WIDTH, LIFEBAR_HEIGHT)
-        self.lifeBar.draw_hearts()
+        self.lifeBar = LifeBar(self, 0, WIN_HEIGHT - LIFEBAR_HEIGHT, WIN_WIDTH, LIFEBAR_HEIGHT, self.player)
+        self.lifeBar.draw_hearts(self.player.hp)
 
     def createTilemap(self):
 
@@ -36,7 +35,7 @@ class Game:
                 if column == "S":
                     Spike(self, j, i)
                 if column == "P":
-                    Player(self, j, i)
+                    self.player = Player(self, j, i)
                 if column == ".":
                     chance = random.random()
                     # 10% de probabilidad de que spawnee algo en cada bloque
@@ -73,6 +72,7 @@ class Game:
         self.spikes = pygame.sprite.LayeredUpdates()
         self.water = pygame.sprite.LayeredUpdates()
         self.lifebar_group = pygame.sprite.LayeredUpdates()
+        self.deals_damage_group = pygame.sprite.Group()
 
         self.createTilemap()
         self.createLifeBar()
@@ -85,6 +85,7 @@ class Game:
 
     def update(self):
         self.all_sprites.update()
+        self.lifebar_group.update()
 
     def draw(self):
         self.screen.fill(pygame.Color(0, 0, 0))
@@ -101,7 +102,7 @@ class Game:
         self.running = False
 
     def game_over(self):
-        pass
+        self.playing = False
 
     def intro_screen(self):
         intro = True
