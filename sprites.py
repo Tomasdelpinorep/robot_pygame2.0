@@ -42,7 +42,7 @@ class Player(pygame.sprite.Sprite):
         self.image = self.game.character_spritesheet.get_sprite(3, 2, self.width, self.height)
 
         # Establezco el hitbox un poco más pequeño para que quepa entre rocas
-        self.rect = pygame.Rect(self.x, self.y, self.width - 12, self.height - 12)
+        self.rect = pygame.Rect(self.x, self.y, self.width - 15, self.height - 15)
         self.rect.x = self.x
         self.rect.y = self.y
 
@@ -104,6 +104,7 @@ class Player(pygame.sprite.Sprite):
             self.t_pressed = True
         elif not keys[pygame.K_t]:
             self.t_pressed = False
+
 
     def set_player_sprite(self):
         if self.isWaterproof:

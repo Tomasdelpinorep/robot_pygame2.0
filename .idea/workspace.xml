@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0fb0fddd-d346-4a0b-bc0a-a7961e04570f" name="Changes" comment="improved hitbox mechanics and implemented waterproof goggles at random location with 100% spawn probability">
+    <list default="true" id="0fb0fddd-d346-4a0b-bc0a-a7961e04570f" name="Changes" comment="added ability to turn watersuit on and off when pressing T">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sprites.py" beforeDir="false" afterPath="$PROJECT_DIR$/sprites.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -112,7 +113,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706462745437</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="added ability to turn watersuit on and off when pressing T">
+      <option name="closed" value="true" />
+      <created>1706774978373</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1706774978373</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -130,6 +139,7 @@
     <MESSAGE value="implemented hearts in life bar" />
     <MESSAGE value="improvements in collission and lifebar hearts" />
     <MESSAGE value="improved hitbox mechanics and implemented waterproof goggles at random location with 100% spawn probability" />
-    <option name="LAST_COMMIT_MESSAGE" value="improved hitbox mechanics and implemented waterproof goggles at random location with 100% spawn probability" />
+    <MESSAGE value="added ability to turn watersuit on and off when pressing T" />
+    <option name="LAST_COMMIT_MESSAGE" value="added ability to turn watersuit on and off when pressing T" />
   </component>
 </project>

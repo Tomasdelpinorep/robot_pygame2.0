@@ -16,6 +16,7 @@ class Game:
         self.character_waterproof_spriteshet = spriteSheet("assets/animated_waterproof.png")
         self.terrain_sprite_sheet = spriteSheet("assets/terrain.png")
         self.intro_background = pygame.image.load("assets/introbackground.png")
+        self.game_over_background = pygame.image.load("assets/gameover.png")
         self.heart_image = pygame.image.load("assets/heartpng.png")
         self.goggles_image = pygame.image.load("assets/goggles.png")
 
@@ -103,6 +104,7 @@ class Game:
     def update(self):
         self.all_sprites.update()
         self.lifebar_group.update()
+        self.quit_game()
 
     def draw(self):
         self.screen.fill(pygame.Color(0, 0, 0))
@@ -143,6 +145,45 @@ class Game:
             self.screen.blit(self.intro_background, (0, 0))
             self.screen.blit(title, title_rect)
             self.screen.blit(play_button.image, play_button.rect)
+            self.clock.tick(FPS)
+            pygame.display.update()
+
+    def quit_game(self):
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_ESCAPE] or keys[pygame.K_q]:
+            self.close_game_message()
+
+    def close_game_message(self):
+        quit_game_message = True
+
+        game_over_font = pygame.font.Font("assets/PressStart2P-Regular.ttf", 16)
+
+        title = game_over_font.render('Are you sure you want to quit?', True, pygame.Color(255, 255, 255))
+        title_rect = title.get_rect(x=10, y=10)
+        yes_button = Button(10, 50, 150, 50, pygame.Color(255, 255, 255), pygame.Color(0, 0, 0), 'Yes', 32)
+        no_button = Button(200, 50, 150, 50, pygame.Color(255, 255, 255), pygame.Color(0, 0, 0), 'No', 32)
+
+        while quit_game_message:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    quit_game_message = False
+                    self.running = False
+            mouse_pos = pygame.mouse.get_pos()
+            # aquí mouse_pressed[0] es left click y mouse_pressed[1] es right click
+            mouse_pressed = pygame.mouse.get_pressed()
+
+            if no_button.is_pressed(mouse_pos, mouse_pressed):
+                quit_game_message = False
+
+            if yes_button.is_pressed(mouse_pos,mouse_pressed):
+                self.game_over()
+                quit_game_message = False
+
+            self.screen.blit(self.game_over_background, (0, 0))
+            self.screen.blit(title, title_rect)
+            self.screen.blit(yes_button.image, yes_button.rect)
+            self.screen.blit(no_button.image, no_button.rect)
             self.clock.tick(FPS)
             pygame.display.update()
 
