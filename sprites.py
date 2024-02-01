@@ -105,7 +105,6 @@ class Player(pygame.sprite.Sprite):
         elif not keys[pygame.K_t]:
             self.t_pressed = False
 
-
     def set_player_sprite(self):
         if self.isWaterproof:
             self.image = self.game.character_waterproof_spriteshet.get_sprite(3, 2, self.width, self.height)
@@ -152,13 +151,27 @@ class Player(pygame.sprite.Sprite):
                         self.take_damage()
 
     def collide_items(self):
-        hits = pygame.sprite.spritecollide(self, self.game.items_group, True)
+        hits = pygame.sprite.spritecollide(self, self.game.items_group, False)
 
         for sprite in hits:
+
             if isinstance(sprite, Goggles):
                 self.isWaterproof = True
                 self.set_player_sprite()
                 self.has_goggles = True
+                sprite.kill()
+
+            if isinstance(sprite, RedShroom):
+                if self.hp + 5 <= 10:
+                    self.hp += RedShroom.heals
+                    self.game.lifeBar.draw_hearts(self.hp)
+                    sprite.kill()
+
+            if isinstance(sprite, BlueShroom):
+                if self.hp + 1 <= 10:
+                    self.hp += BlueShroom.heals
+                    self.game.lifeBar.draw_hearts(self.hp)
+                    sprite.kill()
 
     # Hace que solo pueda dañarse 4 veces al segundo
     def take_damage(self):
@@ -452,3 +465,48 @@ class Goggles(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
+
+
+class RedShroom(pygame.sprite.Sprite):
+    heals = 5
+    def __init__(self, game, x, y):
+        self.game = game
+        self._layer = SPIKE_LAYER
+        self.groups = self.game.all_sprites, self.game.items_group
+
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+        self.x = x * TILE_SIZE
+        self.y = y * TILE_SIZE
+        self.width = TILE_SIZE + 15
+        self.height = TILE_SIZE
+
+        self.image = pygame.transform.scale(game.red_shroom_sprite, (self.width, self.height))
+
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+
+        self.heals = 5
+
+
+class BlueShroom(pygame.sprite.Sprite):
+    heals = 3
+    def __init__(self, game, x, y):
+        self.game = game
+        self._layer = SPIKE_LAYER
+        self.groups = self.game.all_sprites, self.game.items_group
+
+        pygame.sprite.Sprite.__init__(self, self.groups)
+
+        self.x = x * TILE_SIZE
+        self.y = y * TILE_SIZE
+        self.width = TILE_SIZE + 15
+        self.height = TILE_SIZE
+
+        self.image = pygame.transform.scale(game.blue_shroom_sprite, (self.width, self.height))
+
+        self.rect = self.image.get_rect()
+        self.rect.x = self.x
+        self.rect.y = self.y
+

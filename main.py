@@ -19,10 +19,14 @@ class Game:
         self.game_over_background = pygame.image.load("assets/gameover.png")
         self.heart_image = pygame.image.load("assets/heartpng.png")
         self.goggles_image = pygame.image.load("assets/goggles.png")
+        self.red_shroom_sprite = pygame.image.load("assets/5_life.png")
+        self.blue_shroom_sprite = pygame.image.load("assets/3_life.png")
 
         self.num_spikes = NUM_SPIKES
         self.num_water = NUM_WATER
         self.num_diamonds = NUM_DIAMONDS
+        self.num_blue_shrooms = NUM_BLUE_SHROOMS
+        self.num_red_shrooms = NUM_RED_SHROOMS
 
     def createLifeBar(self):
         self.lifeBar = LifeBar(self, 0, WIN_HEIGHT - LIFEBAR_HEIGHT, WIN_WIDTH, LIFEBAR_HEIGHT, self.player)
@@ -30,7 +34,7 @@ class Game:
 
     def createTilemap(self):
 
-        possible_spawns = ['W', 'S', 'D', 'B']
+        possible_spawns = ['W', 'S', 'D', 'B', 'Red', 'Blue']
 
         # Aquí la i actúa como la coordenada "Y" y j actúa como la coordenada "X"
         for i, row in enumerate(TILEMAP):
@@ -57,13 +61,22 @@ class Game:
                                 hasnt_spawned = False
                                 self.num_spikes -= 1
 
+                            if random_spawn == "Blue" and self.num_blue_shrooms > 0:
+                                BlueShroom(self, j, i)
+                                hasnt_spawned = False
+                                self.num_blue_shrooms -= 1
+
+                            if random_spawn == "Red" and self.num_red_shrooms > 0:
+                                RedShroom(self, j, i)
+                                hasnt_spawned = False
+                                self.num_red_shrooms -= 1
+
                             # Por si se da el caso que spawneen todos los bloques posibles antes de que
                             # cargue el mapa al completo
                             if self.num_spikes == 0 and self.num_water == 0:
                                 hasnt_spawned = False
 
                 Ground(self, j, i)
-
 
         random_x = random.randint(0, len(TILEMAP[0]) - 1)
         random_y = random.randint(0, len(TILEMAP) - 1)
@@ -176,7 +189,7 @@ class Game:
             if no_button.is_pressed(mouse_pos, mouse_pressed):
                 quit_game_message = False
 
-            if yes_button.is_pressed(mouse_pos,mouse_pressed):
+            if yes_button.is_pressed(mouse_pos, mouse_pressed):
                 self.game_over()
                 quit_game_message = False
 

@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0fb0fddd-d346-4a0b-bc0a-a7961e04570f" name="Changes" comment="added ability to turn watersuit on and off when pressing T">
+    <list default="true" id="0fb0fddd-d346-4a0b-bc0a-a7961e04570f" name="Changes" comment="added sure you want to quit method">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assets/tilemap.csv" beforeDir="false" afterPath="$PROJECT_DIR$/assets/tilemap.csv" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sprites.py" beforeDir="false" afterPath="$PROJECT_DIR$/sprites.py" afterDir="false" />
     </list>
@@ -121,7 +123,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706774978373</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="added sure you want to quit method">
+      <option name="closed" value="true" />
+      <created>1706781095232</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1706781095232</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -140,6 +150,7 @@
     <MESSAGE value="improvements in collission and lifebar hearts" />
     <MESSAGE value="improved hitbox mechanics and implemented waterproof goggles at random location with 100% spawn probability" />
     <MESSAGE value="added ability to turn watersuit on and off when pressing T" />
-    <option name="LAST_COMMIT_MESSAGE" value="added ability to turn watersuit on and off when pressing T" />
+    <MESSAGE value="added sure you want to quit method" />
+    <option name="LAST_COMMIT_MESSAGE" value="added sure you want to quit method" />
   </component>
 </project>
