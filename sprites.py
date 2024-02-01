@@ -25,6 +25,7 @@ class Player(pygame.sprite.Sprite):
         self.cooldown_ticks = 0
         self.cooldown_duration = 15
         self.isWaterproof = False
+        self.has_goggles = False
         pygame.sprite.Sprite.__init__(self, self.groups)
 
         self.x = x * TILE_SIZE
@@ -41,13 +42,14 @@ class Player(pygame.sprite.Sprite):
         self.image = self.game.character_spritesheet.get_sprite(3, 2, self.width, self.height)
 
         # Establezco el hitbox un poco más pequeño para que quepa entre rocas
-        self.rect = pygame.Rect(self.x, self.y, self.width - 8, self.height - 8)
+        self.rect = pygame.Rect(self.x, self.y, self.width - 12, self.height - 12)
         self.rect.x = self.x
         self.rect.y = self.y
 
     def update(self):
         self.movement()
         self.animate()
+        self.set_watersuit()
 
         self.rect.x += self.x_change
         self.collide_blocks('x')
@@ -94,12 +96,20 @@ class Player(pygame.sprite.Sprite):
     #     for sprite in self.game.all_sprites:
     #         sprite.rect.y -= PLAYER_SPEED
 
+    def set_watersuit(self):
+        keys = pygame.key.get_pressed()
+        # Si se pulsa la T y no se ha pulsado antes y el jugador tiene las gafas:
+        if keys[pygame.K_t] and not self.t_pressed and self.has_goggles:
+            self.isWaterproof = not self.isWaterproof  # Si está true se vuelve false y viceversa
+            self.t_pressed = True
+        elif not keys[pygame.K_t]:
+            self.t_pressed = False
+
     def set_player_sprite(self):
         if self.isWaterproof:
             self.image = self.game.character_waterproof_spriteshet.get_sprite(3, 2, self.width, self.height)
         else:
             self.image = self.game.character_spritesheet.get_sprite(3, 2, self.width, self.height)
-
 
     def collide_blocks(self, direction):
         hits = pygame.sprite.spritecollide(self, self.game.deals_damage_group, False)
@@ -107,8 +117,6 @@ class Player(pygame.sprite.Sprite):
         # Actualiza corazones o acaba la partida
         if hits:
             self.game.lifeBar.draw_hearts(self.hp)
-            if self.hp <= 0:
-                self.game.game_over()
 
             for sprite in hits:
 
@@ -149,12 +157,14 @@ class Player(pygame.sprite.Sprite):
             if isinstance(sprite, Goggles):
                 self.isWaterproof = True
                 self.set_player_sprite()
-
+                self.has_goggles = True
 
     # Hace que solo pueda dañarse 4 veces al segundo
     def take_damage(self):
         if self.cooldown_ticks == 0:
             self.hp -= 1
+            if self.hp <= 0:
+                self.game.game_over()
             self.game.lifeBar.draw_hearts(self.hp)
             self.cooldown_ticks = self.cooldown_duration
 
@@ -422,6 +432,7 @@ class Heart(pygame.sprite.Sprite):
         self.rect.x = self.x
         self.rect.y = self.y
 
+
 class Goggles(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
         self.game = game
@@ -436,7 +447,6 @@ class Goggles(pygame.sprite.Sprite):
         self.height = TILE_SIZE
 
         self.image = pygame.transform.scale(game.goggles_image, (self.width, self.height))
-
 
         self.rect = self.image.get_rect()
         self.rect.x = self.x
