@@ -4,12 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0fb0fddd-d346-4a0b-bc0a-a7961e04570f" name="Changes" comment="added sure you want to quit method">
+    <list default="true" id="0fb0fddd-d346-4a0b-bc0a-a7961e04570f" name="Changes" comment="added mushrooms">
+      <change afterPath="$PROJECT_DIR$/Player.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/assets/diamond.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/blueshroom.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/button.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/diamond.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/game.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/goggles.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ground.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/heart.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/lifebar.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/redshroom.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spike.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/spriteSheet.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/water.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assets/tilemap.csv" beforeDir="false" afterPath="$PROJECT_DIR$/assets/tilemap.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/sprites.py" beforeDir="false" afterPath="$PROJECT_DIR$/sprites.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/sprites.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,16 +53,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Python.main.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
   }
-}</component>
+}]]></component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="pythonProject2.0" />
@@ -131,7 +145,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706781095232</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="added mushrooms">
+      <option name="closed" value="true" />
+      <created>1706791570298</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1706791570298</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -146,11 +168,13 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="implemented hearts in life bar" />
     <MESSAGE value="improvements in collission and lifebar hearts" />
     <MESSAGE value="improved hitbox mechanics and implemented waterproof goggles at random location with 100% spawn probability" />
     <MESSAGE value="added ability to turn watersuit on and off when pressing T" />
     <MESSAGE value="added sure you want to quit method" />
-    <option name="LAST_COMMIT_MESSAGE" value="added sure you want to quit method" />
+    <MESSAGE value="added mushrooms" />
+    <option name="LAST_COMMIT_MESSAGE" value="added mushrooms" />
   </component>
 </project>

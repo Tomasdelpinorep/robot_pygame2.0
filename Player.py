@@ -1,19 +1,12 @@
+import math
+
 import pygame
 from config import *
-import math
-import random
-
-
-class spriteSheet():
-    def __init__(self, file):
-        self.sheet = pygame.image.load(file).convert()
-
-    def get_sprite(self, x, y, width, height):
-        sprite = pygame.Surface([width, height])
-        sprite.blit(self.sheet, (0, 0), (x, y, width, height))
-        # Esto hace que el hitbox negro del personaje sea transparente
-        sprite.set_colorkey(pygame.Color(0, 0, 0))
-        return sprite
+import water
+import spike
+import goggles
+import redshroom
+import blueshroom
 
 
 class Player(pygame.sprite.Sprite):
@@ -121,7 +114,7 @@ class Player(pygame.sprite.Sprite):
             for sprite in hits:
 
                 # Esto permite entrar en un bloque de agua pero te repele de un pincho
-                if isinstance(sprite, Spike):
+                if isinstance(sprite, spike.Spike):
                     self.take_damage()
 
                     if direction == "x":
@@ -146,7 +139,7 @@ class Player(pygame.sprite.Sprite):
                         if self.y_change < 0:
                             self.rect.y = hits[0].rect.bottom + 10
 
-                if isinstance(sprite, Water):
+                if isinstance(sprite, water.Water):
                     if not self.isWaterproof:
                         self.take_damage()
 
@@ -155,21 +148,21 @@ class Player(pygame.sprite.Sprite):
 
         for sprite in hits:
 
-            if isinstance(sprite, Goggles):
+            if isinstance(sprite, goggles.Goggles):
                 self.isWaterproof = True
                 self.set_player_sprite()
                 self.has_goggles = True
                 sprite.kill()
 
-            if isinstance(sprite, RedShroom):
+            if isinstance(sprite, redshroom.RedShroom):
                 if self.hp + 5 <= 10:
-                    self.hp += RedShroom.heals
+                    self.hp += redshroom.RedShroom.heals
                     self.game.lifeBar.draw_hearts(self.hp)
                     sprite.kill()
 
-            if isinstance(sprite, BlueShroom):
+            if isinstance(sprite, blueshroom.BlueShroom):
                 if self.hp + 1 <= 10:
-                    self.hp += BlueShroom.heals
+                    self.hp += blueshroom.BlueShroom.heals
                     self.game.lifeBar.draw_hearts(self.hp)
                     sprite.kill()
 
@@ -300,213 +293,3 @@ class Player(pygame.sprite.Sprite):
                     self.animation_loop += 0.1
                     if self.animation_loop >= 3:
                         self.animation_loop = 1
-
-
-class Spike(pygame.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self.game = game
-        self._layer = SPIKE_LAYER
-
-        # Añade a los grupos de los sprites y de los spikes
-        self.groups = self.game.all_sprites, self.game.spikes, self.game.deals_damage_group
-
-        # Llama al inicializador de sprite.Sprite y se añade la clase Spike a los grupos de sprite pasados por parámetro
-        pygame.sprite.Sprite.__init__(self, self.groups)
-
-        self.x = x * TILE_SIZE
-        self.y = y * TILE_SIZE
-        self.width = TILE_SIZE
-        self.height = TILE_SIZE
-
-        self.image = self.game.terrain_sprite_sheet.get_sprite(960, 448, self.width, self.height)
-
-        self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-
-
-class Water(pygame.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self.game = game
-        self._layer = SPIKE_LAYER
-        self.groups = self.game.all_sprites, self.game.water, self.game.deals_damage_group
-
-        pygame.sprite.Sprite.__init__(self, self.groups)
-
-        self.x = x * TILE_SIZE
-        self.y = y * TILE_SIZE
-        self.width = TILE_SIZE
-        self.height = TILE_SIZE
-
-        self.image = self.game.terrain_sprite_sheet.get_sprite(928, 160, self.width, self.height)
-
-        self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-
-        self.damage = 1
-
-
-class Ground(pygame.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self.game = game
-        self._layer = GROUND_LAYER
-        self.groups = self.game.all_sprites
-        pygame.sprite.Sprite.__init__(self, self.groups)
-
-        self.x = x * TILE_SIZE
-        self.y = y * TILE_SIZE
-        self.width = TILE_SIZE
-        self.height = TILE_SIZE
-
-        self.image = self.game.terrain_sprite_sheet.get_sprite(64, 352, self.width, self.height)
-
-        self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-
-
-class Button:
-    def __init__(self, x, y, width, height, fg, bg, content, fontsize):
-        self.font = pygame.font.Font("assets/PressStart2P-Regular.ttf", fontsize)
-        self.content = content
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.bg = bg
-        self.fg = fg
-
-        self.image = pygame.Surface((self.width, self.height))
-        self.image.fill(self.bg)
-        self.rect = self.image.get_rect()
-
-        self.rect.x = self.x
-        self.rect.y = self.y
-
-        self.text = self.font.render(self.content, True, self.fg)
-        # Coloca el texto en la mitad del botón
-        self.text_rect = self.text.get_rect(center=(self.width / 2, self.height / 2))
-        self.image.blit(self.text, self.text_rect)
-
-    def is_pressed(self, pos, pressed):
-        if self.rect.collidepoint(pos):
-            # pressed[0] significa que se ha hecho left click
-            if pressed[0]:
-                return True
-            return False
-        return False
-
-
-class LifeBar(pygame.sprite.Sprite):
-    def __init__(self, game, x, y, width, height, player):
-        self.game = game
-        self._layer = LIFEBAR_LAYER
-        self.groups = self.game.lifebar_group
-        pygame.sprite.Sprite.__init__(self, self.groups)
-
-        self.image = pygame.Surface((width, height))
-        self.image.fill(pygame.Color(255, 255, 255))
-
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-
-        self.draw_hearts(player.hp)
-
-    def draw_hearts(self, hp):
-        # Remove only the hearts from the lifebar_group
-        for sprite in self.game.lifebar_group.sprites():
-            if isinstance(sprite, Heart):
-                sprite.kill()
-
-        for i in range(hp):
-            heart = Heart(self.game, i * (LIFEBAR_ITEM_SPRITE_WIDTH + 5),
-                          WIN_HEIGHT - ((LIFEBAR_HEIGHT + LIFEBAR_ITEM_SPRITE_HEIGHT) / 2))
-            self.game.lifebar_group.add(heart)
-
-
-class Heart(pygame.sprite.Sprite):
-    def __init__(self, game, x, y):
-        super().__init__()
-        self.game = game
-        self._layer = LIFEBAR_LAYER
-        self.groups = self.game.lifebar_group
-
-        pygame.sprite.Sprite.__init__(self, self.groups)
-
-        self.x = x
-        self.y = y
-        self.width = 20
-        self.height = 20
-
-        self.image = pygame.transform.scale(self.game.heart_image, (self.width, self.height))
-
-        self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-
-
-class Goggles(pygame.sprite.Sprite):
-    def __init__(self, game, x, y):
-        self.game = game
-        self._layer = SPIKE_LAYER
-        self.groups = self.game.all_sprites, self.game.goggles, self.game.items_group
-
-        pygame.sprite.Sprite.__init__(self, self.groups)
-
-        self.x = x * TILE_SIZE
-        self.y = y * TILE_SIZE
-        self.width = TILE_SIZE
-        self.height = TILE_SIZE
-
-        self.image = pygame.transform.scale(game.goggles_image, (self.width, self.height))
-
-        self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-
-
-class RedShroom(pygame.sprite.Sprite):
-    heals = 5
-    def __init__(self, game, x, y):
-        self.game = game
-        self._layer = SPIKE_LAYER
-        self.groups = self.game.all_sprites, self.game.items_group
-
-        pygame.sprite.Sprite.__init__(self, self.groups)
-
-        self.x = x * TILE_SIZE
-        self.y = y * TILE_SIZE
-        self.width = TILE_SIZE + 15
-        self.height = TILE_SIZE
-
-        self.image = pygame.transform.scale(game.red_shroom_sprite, (self.width, self.height))
-
-        self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-
-        self.heals = 5
-
-
-class BlueShroom(pygame.sprite.Sprite):
-    heals = 3
-    def __init__(self, game, x, y):
-        self.game = game
-        self._layer = SPIKE_LAYER
-        self.groups = self.game.all_sprites, self.game.items_group
-
-        pygame.sprite.Sprite.__init__(self, self.groups)
-
-        self.x = x * TILE_SIZE
-        self.y = y * TILE_SIZE
-        self.width = TILE_SIZE + 15
-        self.height = TILE_SIZE
-
-        self.image = pygame.transform.scale(game.blue_shroom_sprite, (self.width, self.height))
-
-        self.rect = self.image.get_rect()
-        self.rect.x = self.x
-        self.rect.y = self.y
-

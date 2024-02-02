@@ -18,7 +18,7 @@ def read_csv(file_path):
 
 WIN_WIDTH = 640
 WIN_HEIGHT = 510
-LIFEBAR_HEIGHT = 30
+LIFEBAR_HEIGHT = 60
 TILE_SIZE = 32
 FPS = 60
 
