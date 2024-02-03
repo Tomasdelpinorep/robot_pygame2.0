@@ -12,8 +12,9 @@ def read_csv(file_path):
     num_water = int(data[17])
     num_red_shroom = int(data[18])
     num_blue_shroom = int(data[19])
+    num_bombs = int(data[20])
 
-    return data[:15], num_spikes, num_diamonds, num_water, num_red_shroom, num_blue_shroom
+    return data[:15], num_spikes, num_diamonds, num_water, num_red_shroom, num_blue_shroom, num_bombs
 
 
 WIN_WIDTH = 640
@@ -34,6 +35,7 @@ LIFEBAR_LAYER = 4
 LIFEBAR_ITEM_SPRITE_HEIGHT = 20
 LIFEBAR_ITEM_SPRITE_WIDTH = 20
 
-TILEMAP, NUM_SPIKES, NUM_DIAMONDS, NUM_WATER, NUM_RED_SHROOMS, NUM_BLUE_SHROOMS = read_csv("assets/tilemap.csv")
+TILEMAP, NUM_SPIKES, NUM_DIAMONDS, NUM_WATER, NUM_RED_SHROOMS, NUM_BLUE_SHROOMS, NUM_BOMBS = read_csv("assets/tilemap"
+                                                                                                      ".csv")
 
 SINGLE_ITEM = 1

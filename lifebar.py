@@ -1,3 +1,7 @@
+import pygame
+
+from models.exploded_bomb import ExplodedBomb
+from models.lifebar_bomb import LifeBarBomb
 from models.lifebar_diamond import *
 from models.heart import *
 
@@ -16,7 +20,13 @@ class LifeBar(pygame.sprite.Sprite):
         self.rect.x = x
         self.rect.y = y
 
+        self.num_used_bombs = 0
+
         self.draw_hearts(player.hp)
+
+        # Puntuación
+        self.font = pygame.font.Font("assets/PressStart2P-Regular.ttf", 16)
+        self.text_color = pygame.Color(0, 0, 0)
 
     def draw_hearts(self, hp):
         # Remove only the hearts from the lifebar_group
@@ -33,3 +43,29 @@ class LifeBar(pygame.sprite.Sprite):
         diamond = LifeBarDiamond(self.game, (num_diamonds - 1) * (LIFEBAR_ITEM_SPRITE_WIDTH + 5),
                                  WIN_HEIGHT - LIFEBAR_ITEM_SPRITE_HEIGHT - 5)
         self.game.lifebar_group.add(diamond)
+
+    def draw_bombs(self, num_bombs):
+        if num_bombs > 0:
+            bomb = LifeBarBomb(self.game, (WIN_WIDTH / 2) + (self.num_used_bombs + num_bombs - 1) * (
+                    LIFEBAR_ITEM_SPRITE_WIDTH + 5), WIN_HEIGHT - LIFEBAR_ITEM_SPRITE_HEIGHT - 5)
+            self.game.lifebar_group.add(bomb)
+
+    # Dibuja los sprites de bombas usadas
+    def update_bombs(self, num_bombs):
+        for sprite in self.game.lifebar_group.sprites():
+            if isinstance(sprite, LifeBarBomb):
+                sprite.kill()
+                break
+
+        used_bomb = ExplodedBomb(self.game, (WIN_WIDTH / 2) + self.num_used_bombs * (LIFEBAR_ITEM_SPRITE_WIDTH + 5),
+                                 WIN_HEIGHT - LIFEBAR_ITEM_SPRITE_HEIGHT - 5)
+        self.game.lifebar_group.add(used_bomb)
+        self.num_used_bombs += 1
+
+    def draw_score(self, points):
+        self.image.fill(pygame.Color(255, 255, 255))
+        score_text_surface = self.font.render(f"Score: {points}", True, self.text_color)
+        text_x = self.rect.width - score_text_surface.get_width()
+        text_y = (LIFEBAR_HEIGHT/2) - (score_text_surface.get_height()/2)
+
+        self.image.blit(score_text_surface, (text_x, text_y))

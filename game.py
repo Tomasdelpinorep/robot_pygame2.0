@@ -5,6 +5,7 @@ import pygame
 from Player import Player
 from models.blueshroom import BlueShroom
 from config import *
+from models.bomb import Bomb
 from models.button import Button
 from models.diamond import Diamond
 from models.goggles import Goggles
@@ -34,12 +35,15 @@ class Game:
         self.red_shroom_sprite = pygame.image.load("assets/5_life.png")
         self.blue_shroom_sprite = pygame.image.load("assets/3_life.png")
         self.diamond_Sprite = pygame.image.load("assets/diamond.png")
+        self.bomb_sprite = pygame.image.load("assets/bomb.png")
+        self.exploded_bomb_sprite = pygame.image.load("assets/exploded_bomb.png")
 
         self.max_spikes = NUM_SPIKES
         self.max_water = NUM_WATER
         self.max_diamonds = NUM_DIAMONDS
         self.max_blue_shrooms = NUM_BLUE_SHROOMS
         self.max_red_shrooms = NUM_RED_SHROOMS
+        self.max_bombs = NUM_BOMBS
 
     def createLifeBar(self):
         self.lifeBar = LifeBar(self, 0, WIN_HEIGHT - LIFEBAR_HEIGHT, WIN_WIDTH, LIFEBAR_HEIGHT, self.player)
@@ -89,10 +93,15 @@ class Game:
                                 hasnt_spawned = False
                                 self.max_diamonds -= 1
 
+                            if random_spawn == 'B' and self.max_bombs > 0:
+                                Bomb(self, j, i)
+                                hasnt_spawned = False
+                                self.max_bombs -= 1
+
                             # Por si se da el caso que spawneen todos los bloques posibles antes de que
                             # cargue el mapa al completo
                             item_counters = [self.max_water, self.max_spikes, self.max_blue_shrooms,
-                                             self.max_red_shrooms, self.max_diamonds]
+                                             self.max_red_shrooms, self.max_diamonds, self.max_bombs]
 
                             if all(counter == 0 for counter in item_counters):
                                 hasnt_spawned = False

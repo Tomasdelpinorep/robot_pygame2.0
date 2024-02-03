@@ -2,11 +2,13 @@ import math
 
 import pygame
 from config import *
-from models import redshroom, goggles, spike, water, blueshroom
+from models import redshroom, spike, water, blueshroom
 from models.blueshroom import BlueShroom
+from models.bomb import Bomb
 from models.diamond import Diamond
 from models.goggles import Goggles
 from models.redshroom import RedShroom
+from models.spike import Spike
 
 
 class Player(pygame.sprite.Sprite):
@@ -45,7 +47,9 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.movement()
         self.animate()
+        self.game.lifeBar.draw_score(self.total_steps_taken)
         self.set_watersuit()
+        self.use_bomb()
 
         self.rect.x += self.x_change
         self.collide_blocks('x')
@@ -103,6 +107,27 @@ class Player(pygame.sprite.Sprite):
         elif not keys[pygame.K_t]:
             self.t_pressed = False
 
+
+    def use_bomb(self):
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_b] and not self.b_pressed and self.bombs > 0:
+            self.b_pressed = True
+            bomb_radius = TILE_SIZE + TILE_SIZE/2
+            self.bombs -= 1
+            self.game.lifeBar.update_bombs(self.bombs)
+
+            for sprite in self.game.all_sprites:
+                if isinstance(sprite, Spike):
+                    sprite_x, sprite_y = sprite.rect.x, sprite.rect.y
+                    distance = pygame.math.Vector2(sprite_x - self.rect.x, sprite_y - self.rect.y).length()
+
+                    if distance <= bomb_radius:
+                        sprite.kill()
+
+        elif not keys[pygame.K_b]:
+            self.b_pressed = False
+
     def set_player_sprite(self):
         if self.isWaterproof:
             self.image = self.game.character_waterproof_spriteshet.get_sprite(3, 2, self.width, self.height)
@@ -156,6 +181,7 @@ class Player(pygame.sprite.Sprite):
             RedShroom: lambda sprite: self.handle_red_shroom(sprite),
             BlueShroom: lambda sprite: self.handle_blue_shroom(sprite),
             Diamond: lambda sprite: self.handle_diamond(sprite),
+            Bomb: lambda sprite: self.handle_bomb(sprite),
         }
 
         for sprite in hits:
@@ -183,6 +209,11 @@ class Player(pygame.sprite.Sprite):
     def handle_diamond(self, sprite):
         self.diamonds += 1
         self.game.lifeBar.draw_diamonds(self.diamonds)
+        sprite.kill()
+
+    def handle_bomb(self, sprite):
+        self.bombs += 1
+        self.game.lifeBar.draw_bombs(self.bombs)
         sprite.kill()
 
     # Hace que solo pueda dañarse 4 veces al segundo
