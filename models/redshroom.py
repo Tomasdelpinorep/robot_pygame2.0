@@ -1,8 +1,10 @@
 import pygame
 from config import *
 
+
 class RedShroom(pygame.sprite.Sprite):
     heals = 5
+
     def __init__(self, game, x, y):
         self.game = game
         self._layer = SPIKE_LAYER

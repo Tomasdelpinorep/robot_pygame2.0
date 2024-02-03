@@ -1,19 +1,19 @@
-import sys
 import random
 
 import pygame
 
 from Player import Player
-from blueshroom import BlueShroom
+from models.blueshroom import BlueShroom
 from config import *
-from button import Button
-from goggles import Goggles
-from ground import Ground
+from models.button import Button
+from models.diamond import Diamond
+from models.goggles import Goggles
+from models.ground import Ground
 from lifebar import LifeBar
-from redshroom import RedShroom
-from spike import Spike
+from models.redshroom import RedShroom
+from models.spike import Spike
 from spriteSheet import spriteSheet
-from water import Water
+from models.water import Water
 
 
 class Game:
@@ -35,11 +35,11 @@ class Game:
         self.blue_shroom_sprite = pygame.image.load("assets/3_life.png")
         self.diamond_Sprite = pygame.image.load("assets/diamond.png")
 
-        self.num_spikes = NUM_SPIKES
-        self.num_water = NUM_WATER
-        self.num_diamonds = NUM_DIAMONDS
-        self.num_blue_shrooms = NUM_BLUE_SHROOMS
-        self.num_red_shrooms = NUM_RED_SHROOMS
+        self.max_spikes = NUM_SPIKES
+        self.max_water = NUM_WATER
+        self.max_diamonds = NUM_DIAMONDS
+        self.max_blue_shrooms = NUM_BLUE_SHROOMS
+        self.max_red_shrooms = NUM_RED_SHROOMS
 
     def createLifeBar(self):
         self.lifeBar = LifeBar(self, 0, WIN_HEIGHT - LIFEBAR_HEIGHT, WIN_WIDTH, LIFEBAR_HEIGHT, self.player)
@@ -59,34 +59,42 @@ class Game:
                 if column == ".":
                     chance = random.random()
                     # 10% de probabilidad de que spawnee algo en cada bloque
-                    if chance < 0.1:
+                    if chance < 0.15:
                         hasnt_spawned = True
                         while hasnt_spawned:
                             random_spawn = random.choice(possible_spawns)
 
-                            if random_spawn == 'W' and self.num_water > 0:
+                            if random_spawn == 'W' and self.max_water > 0:
                                 Water(self, j, i)
                                 hasnt_spawned = False
-                                self.num_water -= 1
+                                self.max_water -= 1
 
-                            if random_spawn == 'S' and self.num_spikes > 0:
+                            if random_spawn == 'S' and self.max_spikes > 0:
                                 Spike(self, j, i)
                                 hasnt_spawned = False
-                                self.num_spikes -= 1
+                                self.max_spikes -= 1
 
-                            if random_spawn == "Blue" and self.num_blue_shrooms > 0:
+                            if random_spawn == "Blue" and self.max_blue_shrooms > 0:
                                 BlueShroom(self, j, i)
                                 hasnt_spawned = False
-                                self.num_blue_shrooms -= 1
+                                self.max_blue_shrooms -= 1
 
-                            if random_spawn == "Red" and self.num_red_shrooms > 0:
+                            if random_spawn == "Red" and self.max_red_shrooms > 0:
                                 RedShroom(self, j, i)
                                 hasnt_spawned = False
-                                self.num_red_shrooms -= 1
+                                self.max_red_shrooms -= 1
+
+                            if random_spawn == "D" and self.max_diamonds > 0:
+                                Diamond(self, j, i)
+                                hasnt_spawned = False
+                                self.max_diamonds -= 1
 
                             # Por si se da el caso que spawneen todos los bloques posibles antes de que
                             # cargue el mapa al completo
-                            if self.num_spikes == 0 and self.num_water == 0:
+                            item_counters = [self.max_water, self.max_spikes, self.max_blue_shrooms,
+                                             self.max_red_shrooms, self.max_diamonds]
+
+                            if all(counter == 0 for counter in item_counters):
                                 hasnt_spawned = False
 
                 Ground(self, j, i)

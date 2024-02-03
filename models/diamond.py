@@ -2,7 +2,7 @@ import pygame
 from config import *
 
 
-class Goggles(pygame.sprite.Sprite):
+class Diamond(pygame.sprite.Sprite):
     def __init__(self, game, x, y):
         self.game = game
         self._layer = SPIKE_LAYER
@@ -12,10 +12,10 @@ class Goggles(pygame.sprite.Sprite):
 
         self.x = x * TILE_SIZE
         self.y = y * TILE_SIZE
-        self.width = TILE_SIZE
-        self.height = TILE_SIZE
+        self.width = 28
+        self.height = 28
 
-        self.image = self.game.diamond_Sprite
+        self.image = pygame.transform.scale(self.game.diamond_Sprite, (self.width, self.height))
 
         self.rect = self.image.get_rect()
         self.rect.x = self.x

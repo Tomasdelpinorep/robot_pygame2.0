@@ -2,11 +2,11 @@ import math
 
 import pygame
 from config import *
-import water
-import spike
-import goggles
-import redshroom
-import blueshroom
+from models import redshroom, goggles, spike, water, blueshroom
+from models.blueshroom import BlueShroom
+from models.diamond import Diamond
+from models.goggles import Goggles
+from models.redshroom import RedShroom
 
 
 class Player(pygame.sprite.Sprite):
@@ -15,6 +15,8 @@ class Player(pygame.sprite.Sprite):
         self._layer = PLAYER_LAYER
         self.groups = self.game.all_sprites
         self.hp = 10
+        self.bombs = 0
+        self.diamonds = 0
         self.cooldown_ticks = 0
         self.cooldown_duration = 15
         self.isWaterproof = False
@@ -31,6 +33,7 @@ class Player(pygame.sprite.Sprite):
 
         self.facing = 'down'
         self.animation_loop = 1
+        self.total_steps_taken = 0
 
         self.image = self.game.character_spritesheet.get_sprite(3, 2, self.width, self.height)
 
@@ -59,18 +62,20 @@ class Player(pygame.sprite.Sprite):
 
     def movement(self):
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
-            self.x_change -= PLAYER_SPEED
-            self.facing = 'left'
-        if keys[pygame.K_RIGHT]:
-            self.x_change += PLAYER_SPEED
-            self.facing = 'right'
-        if keys[pygame.K_UP]:
-            self.y_change -= PLAYER_SPEED
-            self.facing = 'up'
-        if keys[pygame.K_DOWN]:
-            self.y_change += PLAYER_SPEED
-            self.facing = 'down'
+
+        movement_keys = {
+            pygame.K_LEFT: ('left', -PLAYER_SPEED, 0),
+            pygame.K_RIGHT: ('right', PLAYER_SPEED, 0),
+            pygame.K_UP: ('up', 0, -PLAYER_SPEED),
+            pygame.K_DOWN: ('down', 0, PLAYER_SPEED),
+        }
+
+        for key, (direction, x_change, y_change) in movement_keys.items():
+            if keys[key]:
+                self.facing = direction
+                self.x_change += x_change
+                self.y_change += y_change
+                self.total_steps_taken += 1
 
     # def move_camera_right(self):
     #     # Mando todos los sprites a la izquierda, esto da la ilusión de que hay una cámara siguiendo al personaje
@@ -146,25 +151,39 @@ class Player(pygame.sprite.Sprite):
     def collide_items(self):
         hits = pygame.sprite.spritecollide(self, self.game.items_group, False)
 
+        actions = {
+            Goggles: lambda sprite: self.handle_goggles(sprite),
+            RedShroom: lambda sprite: self.handle_red_shroom(sprite),
+            BlueShroom: lambda sprite: self.handle_blue_shroom(sprite),
+            Diamond: lambda sprite: self.handle_diamond(sprite),
+        }
+
         for sprite in hits:
+            if type(sprite) in actions:
+                actions[type(sprite)](sprite)
 
-            if isinstance(sprite, goggles.Goggles):
-                self.isWaterproof = True
-                self.set_player_sprite()
-                self.has_goggles = True
-                sprite.kill()
+    def handle_goggles(self, sprite):
+        self.isWaterproof = True
+        self.set_player_sprite()
+        self.has_goggles = True
+        sprite.kill()
 
-            if isinstance(sprite, redshroom.RedShroom):
-                if self.hp + 5 <= 10:
-                    self.hp += redshroom.RedShroom.heals
-                    self.game.lifeBar.draw_hearts(self.hp)
-                    sprite.kill()
+    def handle_red_shroom(self, sprite):
+        if self.hp + 5 <= 10:
+            self.hp += redshroom.RedShroom.heals
+            self.game.lifeBar.draw_hearts(self.hp)
+            sprite.kill()
 
-            if isinstance(sprite, blueshroom.BlueShroom):
-                if self.hp + 1 <= 10:
-                    self.hp += blueshroom.BlueShroom.heals
-                    self.game.lifeBar.draw_hearts(self.hp)
-                    sprite.kill()
+    def handle_blue_shroom(self, sprite):
+        if self.hp + 3 <= 10:
+            self.hp += blueshroom.BlueShroom.heals
+            self.game.lifeBar.draw_hearts(self.hp)
+            sprite.kill()
+
+    def handle_diamond(self, sprite):
+        self.diamonds += 1
+        self.game.lifeBar.draw_diamonds(self.diamonds)
+        sprite.kill()
 
     # Hace que solo pueda dañarse 4 veces al segundo
     def take_damage(self):

@@ -1,6 +1,5 @@
-import pygame
-from config import *
-from heart import *
+from models.lifebar_diamond import *
+from models.heart import *
 
 
 class LifeBar(pygame.sprite.Sprite):
@@ -27,5 +26,10 @@ class LifeBar(pygame.sprite.Sprite):
 
         for i in range(hp):
             heart = Heart(self.game, i * (LIFEBAR_ITEM_SPRITE_WIDTH + 5),
-                          WIN_HEIGHT - (LIFEBAR_HEIGHT - 5))
+                          WIN_HEIGHT - LIFEBAR_HEIGHT + 5)
             self.game.lifebar_group.add(heart)
+
+    def draw_diamonds(self, num_diamonds):
+        diamond = LifeBarDiamond(self.game, (num_diamonds - 1) * (LIFEBAR_ITEM_SPRITE_WIDTH + 5),
+                                 WIN_HEIGHT - LIFEBAR_ITEM_SPRITE_HEIGHT - 5)
+        self.game.lifebar_group.add(diamond)
