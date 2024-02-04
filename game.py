@@ -3,6 +3,7 @@ import random
 import pygame
 
 from Player import Player
+from models.Rock import Rock
 from models.blueshroom import BlueShroom
 from config import *
 from models.bomb import Bomb
@@ -38,91 +39,92 @@ class Game:
         self.bomb_sprite = pygame.image.load("assets/bomb.png")
         self.exploded_bomb_sprite = pygame.image.load("assets/exploded_bomb.png")
 
-        self.max_spikes = NUM_SPIKES
-        self.max_water = NUM_WATER
-        self.max_diamonds = NUM_DIAMONDS
-        self.max_blue_shrooms = NUM_BLUE_SHROOMS
-        self.max_red_shrooms = NUM_RED_SHROOMS
-        self.max_bombs = NUM_BOMBS
-
     def createLifeBar(self):
         self.lifeBar = LifeBar(self, 0, WIN_HEIGHT - LIFEBAR_HEIGHT, WIN_WIDTH, LIFEBAR_HEIGHT, self.player)
         self.lifeBar.draw_hearts(self.player.hp)
 
     def createTilemap(self):
-
+        all_diamonds_spawned = False
         possible_spawns = ['W', 'S', 'D', 'B', 'Red', 'Blue']
 
-        # Aquí la i actúa como la coordenada "Y" y j actúa como la coordenada "X"
-        for i, row in enumerate(TILEMAP):
-            for j, column in enumerate(row):
-                if column == "S":
-                    Spike(self, j, i)
-                if column == "P":
-                    self.player = Player(self, j, i)
-                if column == ".":
-                    chance = random.random()
-                    # 10% de probabilidad de que spawnee algo en cada bloque
-                    if chance < 0.15:
-                        hasnt_spawned = True
-                        while hasnt_spawned:
-                            random_spawn = random.choice(possible_spawns)
+        while not all_diamonds_spawned:
+            # Aquí la i actúa como la coordenada "Y" y j actúa como la coordenada "X"
+            for i, row in enumerate(TILEMAP):
+                for j, column in enumerate(row):
+                    if column == "R":
+                        Rock(self, j, i)
+                    if column == "S":
+                        Spike(self, j, i)
+                    if column == "W":
+                        Water(self, j, i)
+                    if column == "P":
+                        self.player = Player(self, j, i)
 
-                            if random_spawn == 'W' and self.max_water > 0:
-                                Water(self, j, i)
-                                hasnt_spawned = False
-                                self.max_water -= 1
+                    if column == ".":
+                        chance = random.random()
+                        # 15% de probabilidad de que spawnee algo en cada bloque
+                        if chance < 0.15:
+                            hasnt_spawned = True
+                            while hasnt_spawned:
+                                random_spawn = random.choice(possible_spawns)
 
-                            if random_spawn == 'S' and self.max_spikes > 0:
-                                Spike(self, j, i)
-                                hasnt_spawned = False
-                                self.max_spikes -= 1
+                                if random_spawn == 'W' and self.max_water > 0:
+                                    Water(self, j, i)
+                                    hasnt_spawned = False
+                                    self.max_water -= 1
 
-                            if random_spawn == "Blue" and self.max_blue_shrooms > 0:
-                                BlueShroom(self, j, i)
-                                hasnt_spawned = False
-                                self.max_blue_shrooms -= 1
+                                if random_spawn == 'S' and self.max_spikes > 0:
+                                    Spike(self, j, i)
+                                    hasnt_spawned = False
+                                    self.max_spikes -= 1
 
-                            if random_spawn == "Red" and self.max_red_shrooms > 0:
-                                RedShroom(self, j, i)
-                                hasnt_spawned = False
-                                self.max_red_shrooms -= 1
+                                if random_spawn == "Blue" and self.max_blue_shrooms > 0:
+                                    BlueShroom(self, j, i)
+                                    hasnt_spawned = False
+                                    self.max_blue_shrooms -= 1
 
-                            if random_spawn == "D" and self.max_diamonds > 0:
-                                Diamond(self, j, i)
-                                hasnt_spawned = False
-                                self.max_diamonds -= 1
+                                if random_spawn == "Red" and self.max_red_shrooms > 0:
+                                    RedShroom(self, j, i)
+                                    hasnt_spawned = False
+                                    self.max_red_shrooms -= 1
 
-                            if random_spawn == 'B' and self.max_bombs > 0:
-                                Bomb(self, j, i)
-                                hasnt_spawned = False
-                                self.max_bombs -= 1
+                                if random_spawn == "D" and self.max_diamonds > 0:
+                                    Diamond(self, j, i)
+                                    hasnt_spawned = False
+                                    self.max_diamonds -= 1
+                                    if self.max_diamonds == 0:
+                                        all_diamonds_spawned = True
 
-                            # Por si se da el caso que spawneen todos los bloques posibles antes de que
-                            # cargue el mapa al completo
-                            item_counters = [self.max_water, self.max_spikes, self.max_blue_shrooms,
-                                             self.max_red_shrooms, self.max_diamonds, self.max_bombs]
+                                if random_spawn == 'B' and self.max_bombs > 0:
+                                    Bomb(self, j, i)
+                                    hasnt_spawned = False
+                                    self.max_bombs -= 1
 
-                            if all(counter == 0 for counter in item_counters):
-                                hasnt_spawned = False
+                                # Por si se da el caso que spawneen todos los bloques posibles antes de que
+                                # cargue el mapa al completo
+                                item_counters = [self.max_water, self.max_spikes, self.max_blue_shrooms,
+                                                 self.max_red_shrooms, self.max_diamonds, self.max_bombs]
 
-                Ground(self, j, i)
+                                if all(counter == 0 for counter in item_counters):
+                                    hasnt_spawned = False
+                    Ground(self, j, i)
 
-        random_x = random.randint(0, len(TILEMAP[0]) - 1)
-        random_y = random.randint(0, len(TILEMAP) - 1)
+        valid_position = False
+        while not valid_position:
+            # Elige una coordenada aleatoria para el spawn de las gafas
+            random_x = random.randint(0, len(TILEMAP[0]) - 1)
+            random_y = random.randint(0, len(TILEMAP) - 1)
+            valid_position = self.is_valid_position(random_x, random_y)
+            if valid_position:
+                Goggles(self, random_x, random_y)
 
-        existing_element = self.get_element_at_coordinate(random_x, random_y)
-        if existing_element:
-            existing_element.kill()
-
-        Goggles(self, random_x, random_y)
-
-    def get_element_at_coordinate(self, x, y):
+    def is_valid_position(self, x, y):
         for sprite in self.all_sprites:
-            if isinstance(sprite, (Spike, Water, Goggles)):  # Add more classes if needed
+            if isinstance(sprite, (Rock, Spike, Water, Diamond, BlueShroom, RedShroom)):
                 if sprite.rect.collidepoint(x * TILE_SIZE, y * TILE_SIZE):
-                    return sprite
-        return None
+                    print(str(x) + " and " + str(y) + " have been detected as invalid")
+                    return False
+        return True
 
     def new(self):
         self.playing = True
@@ -131,9 +133,16 @@ class Game:
         self.spikes = pygame.sprite.LayeredUpdates()
         self.water = pygame.sprite.LayeredUpdates()
         self.lifebar_group = pygame.sprite.LayeredUpdates()
-        self.deals_damage_group = pygame.sprite.Group()
+        self.non_items_group = pygame.sprite.Group()
         self.goggles = pygame.sprite.LayeredUpdates()
         self.items_group = pygame.sprite.Group()
+
+        self.max_spikes = NUM_SPIKES
+        self.max_water = NUM_WATER
+        self.max_diamonds = NUM_DIAMONDS
+        self.max_blue_shrooms = NUM_BLUE_SHROOMS
+        self.max_red_shrooms = NUM_RED_SHROOMS
+        self.max_bombs = NUM_BOMBS
 
         self.createTilemap()
         self.createLifeBar()
@@ -225,6 +234,79 @@ class Game:
 
             self.screen.blit(self.game_over_background, (0, 0))
             self.screen.blit(title, title_rect)
+            self.screen.blit(yes_button.image, yes_button.rect)
+            self.screen.blit(no_button.image, no_button.rect)
+            self.clock.tick(FPS)
+            pygame.display.update()
+
+    def player_death(self):
+        player_death_message = True
+
+        game_over_font = pygame.font.Font("assets/PressStart2P-Regular.ttf", 16)
+
+        title = game_over_font.render('You have died. Do you want to replay?', True, pygame.Color(255, 255, 255))
+        title_rect = title.get_rect(x=10, y=10)
+        yes_button = Button(10, 50, 150, 50, pygame.Color(255, 255, 255), pygame.Color(0, 0, 0), 'Yes', 32)
+        no_button = Button(200, 50, 150, 50, pygame.Color(255, 255, 255), pygame.Color(0, 0, 0), 'No', 32)
+
+        while player_death_message:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    player_death_message = False
+                    self.running = False
+            mouse_pos = pygame.mouse.get_pos()
+            # aquí mouse_pressed[0] es left click y mouse_pressed[1] es right click
+            mouse_pressed = pygame.mouse.get_pressed()
+
+            if no_button.is_pressed(mouse_pos, mouse_pressed):
+                self.game_over()
+                player_death_message = False
+
+            if yes_button.is_pressed(mouse_pos, mouse_pressed):
+                self.new()
+                player_death_message = False
+
+            self.screen.blit(self.game_over_background, (0, 0))
+            self.screen.blit(title, title_rect)
+            self.screen.blit(yes_button.image, yes_button.rect)
+            self.screen.blit(no_button.image, no_button.rect)
+            self.clock.tick(FPS)
+            pygame.display.update()
+
+    def game_finished(self, score):
+        game_completed_message = True
+
+        game_over_font = pygame.font.Font("assets/PressStart2P-Regular.ttf", 16)
+
+        title = game_over_font.render('Congratulations! Your score is: ' + str(score), True, pygame.Color(0, 0, 0))
+        title_rect = title.get_rect(x=10, y=10)
+
+        replay = game_over_font.render("Would you like to replay?", True, pygame.Color(0, 0, 0))
+        replay_rect = replay.get_rect(x=10, y=50)
+
+        yes_button = Button(10, 150, 150, 50, pygame.Color(255, 255, 255), pygame.Color(0, 0, 0), 'Yes', 32)
+        no_button = Button(200, 150, 150, 50, pygame.Color(255, 255, 255), pygame.Color(0, 0, 0), 'No', 32)
+
+        while game_completed_message:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    game_completed_message = False
+                    self.running = False
+            mouse_pos = pygame.mouse.get_pos()
+            # aquí mouse_pressed[0] es left click y mouse_pressed[1] es right click
+            mouse_pressed = pygame.mouse.get_pressed()
+
+            if no_button.is_pressed(mouse_pos, mouse_pressed):
+                self.game_over()
+                game_completed_message = False
+
+            if yes_button.is_pressed(mouse_pos, mouse_pressed):
+                self.new()
+                game_completed_message = False
+
+            self.screen.blit(self.intro_background, (0, 0))
+            self.screen.blit(title, title_rect)
+            self.screen.blit(replay, replay_rect)
             self.screen.blit(yes_button.image, yes_button.rect)
             self.screen.blit(no_button.image, no_button.rect)
             self.clock.tick(FPS)

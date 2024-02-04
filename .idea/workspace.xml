@@ -4,19 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0fb0fddd-d346-4a0b-bc0a-a7961e04570f" name="Changes" comment="implemented diamonds and step counter">
-      <change afterPath="$PROJECT_DIR$/assets/bomb.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/assets/exploded_bomb.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/bomb.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/exploded_bomb.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/models/lifebar_bomb.py" afterDir="false" />
+    <list default="true" id="0fb0fddd-d346-4a0b-bc0a-a7961e04570f" name="Changes" comment="functioning bombs, score appears but not implemented yet">
+      <change afterPath="$PROJECT_DIR$/models/Rock.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Player.py" beforeDir="false" afterPath="$PROJECT_DIR$/Player.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/assets/tilemap.csv" beforeDir="false" afterPath="$PROJECT_DIR$/assets/tilemap.csv" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/game.py" beforeDir="false" afterPath="$PROJECT_DIR$/game.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lifebar.py" beforeDir="false" afterPath="$PROJECT_DIR$/lifebar.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/button.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/button.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/spike.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/spike.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/models/water.py" beforeDir="false" afterPath="$PROJECT_DIR$/models/water.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -160,7 +157,15 @@
       <option name="project" value="LOCAL" />
       <updated>1706971800521</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="functioning bombs, score appears but not implemented yet">
+      <option name="closed" value="true" />
+      <created>1706979548670</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1706979548670</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -183,6 +188,7 @@
     <MESSAGE value="added sure you want to quit method" />
     <MESSAGE value="added mushrooms" />
     <MESSAGE value="implemented diamonds and step counter" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented diamonds and step counter" />
+    <MESSAGE value="functioning bombs, score appears but not implemented yet" />
+    <option name="LAST_COMMIT_MESSAGE" value="functioning bombs, score appears but not implemented yet" />
   </component>
 </project>

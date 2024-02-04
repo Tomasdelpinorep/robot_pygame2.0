@@ -2,13 +2,14 @@ import math
 
 import pygame
 from config import *
-from models import redshroom, spike, water, blueshroom
+from models import redshroom, Rock, water, blueshroom
 from models.blueshroom import BlueShroom
 from models.bomb import Bomb
 from models.diamond import Diamond
 from models.goggles import Goggles
 from models.redshroom import RedShroom
 from models.spike import Spike
+from models.Rock import Rock
 
 
 class Player(pygame.sprite.Sprite):
@@ -21,6 +22,7 @@ class Player(pygame.sprite.Sprite):
         self.diamonds = 0
         self.cooldown_ticks = 0
         self.cooldown_duration = 15
+        self.score = 0
         self.isWaterproof = False
         self.has_goggles = False
         pygame.sprite.Sprite.__init__(self, self.groups)
@@ -47,7 +49,6 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.movement()
         self.animate()
-        self.game.lifeBar.draw_score(self.total_steps_taken)
         self.set_watersuit()
         self.use_bomb()
 
@@ -79,7 +80,7 @@ class Player(pygame.sprite.Sprite):
                 self.facing = direction
                 self.x_change += x_change
                 self.y_change += y_change
-                self.total_steps_taken += 1
+                self.total_steps_taken += 0.1
 
     # def move_camera_right(self):
     #     # Mando todos los sprites a la izquierda, esto da la ilusión de que hay una cámara siguiendo al personaje
@@ -135,16 +136,15 @@ class Player(pygame.sprite.Sprite):
             self.image = self.game.character_spritesheet.get_sprite(3, 2, self.width, self.height)
 
     def collide_blocks(self, direction):
-        hits = pygame.sprite.spritecollide(self, self.game.deals_damage_group, False)
+        hits = pygame.sprite.spritecollide(self, self.game.non_items_group, False)
 
         # Actualiza corazones o acaba la partida
         if hits:
             self.game.lifeBar.draw_hearts(self.hp)
-
             for sprite in hits:
 
                 # Esto permite entrar en un bloque de agua pero te repele de un pincho
-                if isinstance(sprite, spike.Spike):
+                if isinstance(sprite, Spike):
                     self.take_damage()
 
                     if direction == "x":
@@ -168,6 +168,22 @@ class Player(pygame.sprite.Sprite):
                         # Si estoy yendo hacia arriba
                         if self.y_change < 0:
                             self.rect.y = hits[0].rect.bottom + 10
+
+                if isinstance(sprite, Rock):
+
+                    if direction == "x":
+                        if self.x_change > 0:
+                            self.rect.x = hits[0].rect.left - self.rect.width
+
+                        if self.x_change < 0:
+                            self.rect.x = hits[0].rect.right
+
+                    if direction == "y":
+                        if self.y_change > 0:
+                            self.rect.y = hits[0].rect.top - self.rect.height
+
+                        if self.y_change < 0:
+                            self.rect.y = hits[0].rect.bottom
 
                 if isinstance(sprite, water.Water):
                     if not self.isWaterproof:
@@ -210,6 +226,10 @@ class Player(pygame.sprite.Sprite):
         self.diamonds += 1
         self.game.lifeBar.draw_diamonds(self.diamonds)
         sprite.kill()
+        self.score = self.game.lifeBar.calculate_score(math.floor(self.total_steps_taken), self.diamonds, self.hp)
+        if self.diamonds == NUM_DIAMONDS:
+            self.game.game_finished(self.score)
+
 
     def handle_bomb(self, sprite):
         self.bombs += 1
@@ -221,7 +241,7 @@ class Player(pygame.sprite.Sprite):
         if self.cooldown_ticks == 0:
             self.hp -= 1
             if self.hp <= 0:
-                self.game.game_over()
+                self.game.player_death()
             self.game.lifeBar.draw_hearts(self.hp)
             self.cooldown_ticks = self.cooldown_duration
 

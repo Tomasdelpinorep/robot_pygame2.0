@@ -1,3 +1,5 @@
+import math
+
 import pygame
 
 from models.exploded_bomb import ExplodedBomb
@@ -27,6 +29,7 @@ class LifeBar(pygame.sprite.Sprite):
         # Puntuación
         self.font = pygame.font.Font("assets/PressStart2P-Regular.ttf", 16)
         self.text_color = pygame.Color(0, 0, 0)
+        self.points = 0
 
     def draw_hearts(self, hp):
         # Remove only the hearts from the lifebar_group
@@ -62,10 +65,15 @@ class LifeBar(pygame.sprite.Sprite):
         self.game.lifebar_group.add(used_bomb)
         self.num_used_bombs += 1
 
-    def draw_score(self, points):
+    def draw_score(self):
         self.image.fill(pygame.Color(255, 255, 255))
-        score_text_surface = self.font.render(f"Score: {points}", True, self.text_color)
+        score_text_surface = self.font.render(f"Score: {self.points}", True, self.text_color)
         text_x = self.rect.width - score_text_surface.get_width()
-        text_y = (LIFEBAR_HEIGHT/2) - (score_text_surface.get_height()/2)
+        text_y = (LIFEBAR_HEIGHT / 2) - (score_text_surface.get_height() / 2)
 
         self.image.blit(score_text_surface, (text_x, text_y))
+
+    def calculate_score(self, steps_taken, num_diamonds, hp):
+        self.points += math.ceil((num_diamonds * hp) / (steps_taken + 1) ** 0.5)
+        self.draw_score()
+        return self.points

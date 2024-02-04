@@ -8,7 +8,7 @@ class Spike(pygame.sprite.Sprite):
         self._layer = SPIKE_LAYER
 
         # Añade a los grupos de los sprites y de los spikes
-        self.groups = self.game.all_sprites, self.game.spikes, self.game.deals_damage_group
+        self.groups = self.game.all_sprites, self.game.spikes, self.game.non_items_group
 
         # Llama al inicializador de sprite.Sprite y se añade la clase Spike a los grupos de sprite pasados por parámetro
         pygame.sprite.Sprite.__init__(self, self.groups)
@@ -18,7 +18,7 @@ class Spike(pygame.sprite.Sprite):
         self.width = TILE_SIZE
         self.height = TILE_SIZE
 
-        self.image = self.game.terrain_sprite_sheet.get_sprite(960, 448, self.width, self.height)
+        self.image = self.game.terrain_sprite_sheet.get_sprite(736, 160, self.width, self.height)
 
         self.rect = self.image.get_rect()
         self.rect.x = self.x
