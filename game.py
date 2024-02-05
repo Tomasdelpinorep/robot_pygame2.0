@@ -178,7 +178,7 @@ class Game:
     def intro_screen(self):
         intro = True
 
-        title = self.font.render('GTA VI', True, pygame.Color(0, 0, 0))
+        title = self.font.render('Diamond Collector', True, pygame.Color(0, 0, 0))
         title_rect = title.get_rect(x=10, y=10)
         play_button = Button(10, 50, 150, 50, pygame.Color(255, 255, 255), pygame.Color(0, 0, 0), 'Play', 32)
 
