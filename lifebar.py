@@ -31,6 +31,8 @@ class LifeBar(pygame.sprite.Sprite):
         self.text_color = pygame.Color(0, 0, 0)
         self.points = 0
 
+        self.draw_score()
+
     def draw_hearts(self, hp):
         # Remove only the hearts from the lifebar_group
         for sprite in self.game.lifebar_group.sprites():

@@ -1,4 +1,5 @@
 # Diamond Collector - A 2D Top-Down Adventure Game
+![img_1.png](assets/img_1.png)
 
 Welcome to Diamond Collector, an engaging 2D top-down view game where you embark on an exciting adventure to collect diamonds, showcase your agility, and achieve the highest score possible! Dodge obstacles, strategically navigate the terrain, and make every step count to emerge as the ultimate Diamond Collector.
 
@@ -15,9 +16,6 @@ Welcome to Diamond Collector, an engaging 2D top-down view game where you embark
 - **Arrow Keys:** Move your character in the desired direction.
 - **T:** Activate / deactivate waterproof "suit" if collected.
 - **B:** Throw bombs to destroy spikes around your character.
-
-## Graphics
-
 
 ## How to Play
 
